@@ -16,7 +16,7 @@ original_data = [
     ['2/01/14', 43, 44, 42, 43],
     ['2/02/14', 46, 47, 45, 46],
     ['2/03/14', 44, 45, 43, 44],
-    ['2/04/14', 40, 55, 35, 50],
+    ['2/04/14', 40, 55, 35, 50]
 ]
 
 # convert data to columns
@@ -30,6 +30,7 @@ low = columnar_data[3].astype(float)
 close = columnar_data[4].astype(float)
 
 result = ta.CDLTRISTAR(open, high, low, close)
+
 plt.plot(close)
 plt.plot(result)
 plt.show()
