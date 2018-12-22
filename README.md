@@ -14,8 +14,15 @@ Pour cela, la liste contiendra les éléments suivants :
    1 : réussite d'un pattern
   -1 : echec d'un pattern
 * _DONE_ - 4 - Fonction de calcul de l'espérance des gains, du pourcentage de réussite du pattern et du délais moyen de réussite.
-* __TODO__ - 5 - Retester les résultats des/du pattern. (ils semblent un peu fort)
-* __TODO__ - 6 - Ajouter les calculs de max drawndown et de courbe de capital
+* _DONE_ - 5 - Retester les résultats des/du pattern. (ils semblent un peu fort)
+    + _DONE_ - 5.1 -  -> Comment est determiné le buy price ? Il ne doit pas être sur le pattern mais juste après celui-ci -> OK
+    + _DONE_ - 5.2 -  -> Revoir cette idée de slippage -> Pas mal, il faudra néanmoins être capable par la suite de fixer les sl et tp à des niveaux de supports/résistances ou des pivots.
+    + _DONE_ - 5.3 - -> Representer graphiquement ce qu'il se passe, ça aide au debug.
+    + _DONE_ - 5.4 -  -> Créer une méthode qui retourne tableau de corrélation aléatoire.
+    + _DONE_ - 5.5 -  -> Problème identifié : Effectivement les résultats étaient biaisés par l'ordre d'évaluation des candles suivantes, Il faut maintenant trouver un moyen égalitaire et equilibré pour faire cette détermination -> OK, random 1/2
+
+
+* _DONE_ - 6 - Ajouter les calculs de max drawndown et de courbe de capital
 * __TODO__ - 7 - Créer une méthode de filtrage en fonction du sens de la courbe (.filter apres l'appel à ta-lib)
 * __TODO__ - 8 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
 * __TODO__ - 9 - Implémenter le critère de Kelly pour le MM.
