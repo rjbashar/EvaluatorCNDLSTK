@@ -98,6 +98,27 @@ def compute_max_drawdown(tab):
     return all_time_max
 
 
+def zigzag_filter(tab_cor, direction='up', since='15'):
+    pass
+
+
+def ema_filter(price, tab_cor, direction=0, ma=15):
+    ema = ta.EMA(price, timeperiod=ma)
+    pdirection = 0
+    for i in range(0, len(tab_cor)):
+        if tab_cor[i] != 0:
+            if ema[i] is not None:
+                if price[i] > ema[i] and price[i] > price[i-ma]:
+                    pdirection = 1
+                elif price[i] < ema[i] and price[i] < price[i-ma]:
+                    pdirection = -1
+                else:
+                    pdirection = 0
+            if pdirection != direction:
+                tab_cor[i] = 0
+    return tab_cor
+
+
 def main():
     begin = "'2018-03-01T00:00:00Z'"
     end = "'2018-10-01T10:00:00Z'"
@@ -113,15 +134,17 @@ def main():
     # tab_cor = ta.CDLBELTHOLD(o, h, l, c)
     # tab_cor = ta.CDLCOUNTERATTACK(o, h, l, c)
     tab_cor = ta.CDLHAMMER(o, h, l, c)
-
     # tab_cor = randompattern.random(len(o))
+
+    print(tab_cor)
+    tab_cor = ema_filter(c, tab_cor, direction=1, ma=9)
     print(tab_cor)
 
     koef = 2
     percent_of_capital = 5
     candle_timeframe = 30
     evaluation = eval.continuation_higher_than_risk_n_timeframe_with_stoploss(o, h, l, c, tab_cor, k=koef,
-                                                                              n=candle_timeframe)
+                                                                              n=candle_timeframe, plot=False)
     plot_price_and_eval(o, h, l, c, evaluation)
     final_cap = plot_capital(percent_of_capital, evaluation)
 
