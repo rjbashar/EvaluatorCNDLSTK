@@ -5,7 +5,6 @@ from influxdb import *
 from mpl_finance import candlestick2_ohlc
 
 import eval
-import randompattern
 
 
 def get_data(begin, end, exchange, duration, market_symbol):
@@ -119,6 +118,14 @@ def ema_filter(price, tab_cor, direction=0, ma=15):
     return tab_cor
 
 
+def amplitude_filter(c, l, tab_cor, min_amplitude=0.01):
+    for i in range(0, len(tab_cor)):
+        if tab_cor[i] != 0:
+            if (c[i] - l[i]) / c[i] < min_amplitude:
+                tab_cor[i] = 0
+    return tab_cor
+
+
 def main():
     begin = "'2018-03-01T00:00:00Z'"
     end = "'2018-10-01T10:00:00Z'"
@@ -136,9 +143,10 @@ def main():
     tab_cor = ta.CDLHAMMER(o, h, l, c)
     # tab_cor = randompattern.random(len(o))
 
-    print(tab_cor)
+    print(str(tab_cor))
     tab_cor = ema_filter(c, tab_cor, direction=1, ma=9)
-    print(tab_cor)
+    tab_cor = amplitude_filter(h, l, tab_cor, min_amplitude=0.01)
+    print(str(tab_cor))
 
     koef = 2
     percent_of_capital = 5
