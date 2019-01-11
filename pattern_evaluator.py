@@ -126,6 +126,22 @@ def amplitude_filter(c, l, tab_cor, min_amplitude=0.01):
     return tab_cor
 
 
+def search_lower(prices):
+    low = 1000000000000
+    for p in prices:
+        if p < low:
+            low = p
+    return low
+
+
+def search_higher(prices):
+    high = 0
+    for p in prices:
+        if p > high:
+            high = p
+    return high
+
+
 def main():
     begin = "'2018-03-01T00:00:00Z'"
     end = "'2018-10-01T10:00:00Z'"
@@ -152,7 +168,7 @@ def main():
     percent_of_capital = 5
     candle_timeframe = 30
     evaluation = eval.continuation_higher_than_risk_n_timeframe_with_stoploss(o, h, l, c, tab_cor, k=koef,
-                                                                              n=candle_timeframe, plot=False)
+                                                                              n=candle_timeframe, plot=True)
     plot_price_and_eval(o, h, l, c, evaluation)
     final_cap = plot_capital(percent_of_capital, evaluation)
 
@@ -168,6 +184,12 @@ def main():
     print("\n\n##################################################################")
     print("Benchmark between {} {} and {} {}".format(begin[1:11], begin[12:-2], end[1:11], end[12:-2]))
     print("Benchmark on {} {} chart from {}".format(market_symbol, duration, exchange))
+    print("Start Price        : {}".format(o[0]))
+    higher = search_higher(h)
+    print("Higher Price       : {}".format(higher))
+    lower = search_lower(l)
+    print("Lower Price        : {}".format(lower))
+    print("End Price          : {}".format(c[-1]))
     print("Win Trade          : {}".format(win))
     print("Loss Trade         : {}".format(loss))
     total = win + loss

@@ -23,10 +23,11 @@ Pour cela, la liste contiendra les éléments suivants :
 
 * _DONE_ - 6 - Ajouter les calculs de max drawndown et de courbe de capital
 * _DONE_ - 7 - Créer une méthode de filtrage en fonction du sens de la courbe (.filter apres l'appel à ta-lib)
-* __TODO__ - 8 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
-* __TODO__ - 9 - Implémenter le critère de Kelly pour le MM et Sharpe Ratio (si valide).
-    + __TODO__ - 9.1 -  -> Critère de Kelly
-    + __TODO__ - 9.2 -  -> Sharpe Ratio
-* __TODO__ - 10 - Télécharger des données du forex pour tester sur de 'vrais' marchés les patterns.
+* _DONE_ - 8 - Ajouter dans les logs final le prix de départ, fin, plus haut et plus bas. (et un résumé du backtest ?)
+* __TODO__ - 9 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
+* __TODO__ - 10 - Implémenter le critère de Kelly pour le MM et Sharpe Ratio (si valide).
+    + __TODO__ - 10.1 -  -> Critère de Kelly
+    + __TODO__ - 10.2 -  -> Sharpe Ratio
+* __TODO__ - 11 - Télécharger des données du forex pour tester sur de 'vrais' marchés les patterns.
 
 
