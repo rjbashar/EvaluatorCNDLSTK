@@ -1,6 +1,7 @@
-from mpl_finance import candlestick2_ohlc
-import matplotlib.pyplot as plt
 import random
+
+import matplotlib.pyplot as plt
+from mpl_finance import candlestick2_ohlc
 
 
 def simple_continuation(o, h, l, c, tab_cor, k=1, n=1):
@@ -130,7 +131,14 @@ def continuation_higher_than_risk_n_timeframe_with_stoploss(o, h, l, c, tab_cor,
             # Let's plot stuff
             if plot:
                 fig, ax = plt.subplots()
-                candlestick2_ohlc(ax, o[i-2:i+n+1], h[i-2:i+n+1], l[i-2:i+n+1], c[i-2:i+n+1], width=1)
+                w_dec = 20
+                if i - w_dec < 0:
+                    dec = i
+                else:
+                    dec = w_dec
+                candlestick2_ohlc(ax, o[i - dec:i + n + 1], h[i - dec:i + n + 1], l[i - dec:i + n + 1],
+                                  c[i - dec:i + n + 1], width=1)
+                plt.axvline(dec, color='b')
                 plt.axhline(sl, color='r')
                 plt.axhline(tp, color='g')
 
@@ -183,10 +191,18 @@ def continuation_higher_than_risk_n_timeframe_with_stoploss(o, h, l, c, tab_cor,
                     break
 
             # Let's plot stuff
-            fig, ax = plt.subplots()
-            candlestick2_ohlc(ax, o[i-2:i+n+1], h[i-2:i+n+1], l[i-2:i+n+1], c[i-2:i+n+1], width=1)
-            plt.axhline(sl, color='r')
-            plt.axhline(tp, color='g')
+            if plot:
+                fig, ax = plt.subplots()
+                w_dec = 20
+                if i - w_dec < 0:
+                    dec = i
+                else:
+                    dec = w_dec
+                candlestick2_ohlc(ax, o[i - dec:i + n + 1], h[i - dec:i + n + 1], l[i - dec:i + n + 1],
+                                  c[i - dec:i + n + 1], width=1)
+                plt.axvline(dec, color='b')
+                plt.axhline(sl, color='r')
+                plt.axhline(tp, color='g')
 
             if has_triggered_tp:
                 ret.append(1)

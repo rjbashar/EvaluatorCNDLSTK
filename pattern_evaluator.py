@@ -103,13 +103,14 @@ def zigzag_filter(tab_cor, direction='up', since='15'):
 
 def ema_filter(price, tab_cor, direction=0, ma=15):
     ema = ta.EMA(price, timeperiod=ma)
+    long_ema = ta.EMA(price, timeperiod=2 * ma - 1)
     pdirection = 0
     for i in range(0, len(tab_cor)):
         if tab_cor[i] != 0:
             if ema[i] is not None:
-                if price[i] > ema[i] and price[i] > price[i-ma]:
+                if price[i] > ema[i] > long_ema[i]:
                     pdirection = 1
-                elif price[i] < ema[i] and price[i] < price[i-ma]:
+                elif price[i] < ema[i] < long_ema[i]:
                     pdirection = -1
                 else:
                     pdirection = 0
@@ -154,21 +155,22 @@ def main():
     # tab_cor = ta.CDLDOJI(o, h, l, c)
     # tab_cor = ta.CDLDOJISTAR(o, h, l, c)
     # tab_cor = ta.CDLSHOOTINGSTAR(o, h, l, c)
-    # tab_cor = ta.CDLBELTHOLD(o, h, l, c)
+    tab_cor = ta.CDLBELTHOLD(o, h, l, c)
     # tab_cor = ta.CDLCOUNTERATTACK(o, h, l, c)
-    tab_cor = ta.CDLHAMMER(o, h, l, c)
+    # tab_cor = ta.CDLHAMMER(o, h, l, c)
     # tab_cor = randompattern.random(len(o))
 
     print(str(tab_cor))
-    tab_cor = ema_filter(c, tab_cor, direction=1, ma=9)
-    tab_cor = amplitude_filter(h, l, tab_cor, min_amplitude=0.01)
+    tab_cor = ema_filter(c, tab_cor, direction=0, ma=9)
+    # tab_cor = amplitude_filter(h, l, tab_cor, min_amplitude=0.01)
     print(str(tab_cor))
 
-    koef = 2
+    koef = 1
     percent_of_capital = 5
-    candle_timeframe = 30
+    candle_timeframe = 25
     evaluation = eval.continuation_higher_than_risk_n_timeframe_with_stoploss(o, h, l, c, tab_cor, k=koef,
                                                                               n=candle_timeframe, plot=True)
+    # Plot graphs
     plot_price_and_eval(o, h, l, c, evaluation)
     final_cap = plot_capital(percent_of_capital, evaluation)
 
