@@ -24,7 +24,21 @@ Pour cela, la liste contiendra les éléments suivants :
 * _DONE_ - 6 - Ajouter les calculs de max drawndown et de courbe de capital
 * _DONE_ - 7 - Créer une méthode de filtrage en fonction du sens de la courbe (.filter apres l'appel à ta-lib)
 * _DONE_ - 8 - Ajouter dans les logs final le prix de départ, fin, plus haut et plus bas. (et un résumé du backtest ?)
-* __TODO__ - 9 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
+* __INPR__ - 9 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
+    + _DONE_ - 9.1 -  -> Conception
+    + _DONE_ - 9.2 -  -> Documentation
+    + __INPR__ - 9.3 -  -> Implémentation
+        o __TODO__ - 9.3.1 -  -> a
+        o __TODO__ - 9.3.2 -  -> b
+        o __TODO__ - 9.3.3 -  -> c
+        o __TODO__ - 9.3.4 -  -> d
+        o __TODO__ - 9.3.5 -  -> e
+        o __TODO__ - 9.3.6 -  -> f
+        o __TODO__ - 9.3.7 -  -> g
+        o __TODO__ - 9.3.8 -  -> h
+    + __TODO__ - 9.4 -  -> Tests
+    + __TODO__ - 9.5 -  -> Run et analyse des résultats
+
 * _DONE_- 10 - Télécharger des données du forex (EURUSD depuis Mai 2000).
 
 
