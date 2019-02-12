@@ -28,14 +28,14 @@ Pour cela, la liste contiendra les éléments suivants :
     + _DONE_ - 9.1 -  -> Conception
     + _DONE_ - 9.2 -  -> Documentation
     + __INPR__ - 9.3 -  -> Implémentation
-        o __TODO__ - 9.3.1 -  -> a
-        o __TODO__ - 9.3.2 -  -> b
-        o __TODO__ - 9.3.3 -  -> c
-        o __TODO__ - 9.3.4 -  -> d
-        o __TODO__ - 9.3.5 -  -> e
-        o __TODO__ - 9.3.6 -  -> f
-        o __TODO__ - 9.3.7 -  -> g
-        o __TODO__ - 9.3.8 -  -> h
+        - __INPR__ - 9.3.1 -  -> a
+        - __INPR__ - 9.3.2 -  -> b
+        - __INPR__ - 9.3.3 -  -> c
+        - __INPR__ - 9.3.4 -  -> d
+        - __INPR__ - 9.3.5 -  -> e
+        - __INPR__ - 9.3.6 -  -> f
+        - __INPR__ - 9.3.7 -  -> g
+        - __INPR__ - 9.3.8 -  -> h
     + __TODO__ - 9.4 -  -> Tests
     + __TODO__ - 9.5 -  -> Run et analyse des résultats
 
