@@ -5,6 +5,7 @@ from influxdb import *
 from mpl_finance import candlestick2_ohlc
 
 import eval
+import filter
 
 
 def get_data(begin, end, exchange, duration, market_symbol):
@@ -97,36 +98,6 @@ def compute_max_drawdown(tab):
     return all_time_max
 
 
-def zigzag_filter(tab_cor, direction='up', since='15'):
-    pass
-
-
-def ema_filter(price, tab_cor, direction=0, ma=15):
-    ema = ta.EMA(price, timeperiod=ma)
-    long_ema = ta.EMA(price, timeperiod=2 * ma - 1)
-    pdirection = 0
-    for i in range(0, len(tab_cor)):
-        if tab_cor[i] != 0:
-            if ema[i] is not None:
-                if price[i] > ema[i] > long_ema[i]:
-                    pdirection = 1
-                elif price[i] < ema[i] < long_ema[i]:
-                    pdirection = -1
-                else:
-                    pdirection = 0
-            if pdirection != direction:
-                tab_cor[i] = 0
-    return tab_cor
-
-
-def amplitude_filter(c, l, tab_cor, min_amplitude=0.01):
-    for i in range(0, len(tab_cor)):
-        if tab_cor[i] != 0:
-            if (c[i] - l[i]) / c[i] < min_amplitude:
-                tab_cor[i] = 0
-    return tab_cor
-
-
 def search_lower(prices):
     low = 1000000000000
     for p in prices:
@@ -161,7 +132,7 @@ def main():
     # tab_cor = randompattern.random(len(o))
 
     print(str(tab_cor))
-    tab_cor = ema_filter(c, tab_cor, direction=0, ma=9)
+    tab_cor = filter.ema_filter(c, tab_cor, direction='bullish', ma=9)
     # tab_cor = amplitude_filter(h, l, tab_cor, min_amplitude=0.01)
     print(str(tab_cor))
 

@@ -27,16 +27,16 @@ Pour cela, la liste contiendra les éléments suivants :
 * __INPR__ - 9 - Automatiser le test de plusieurs patterns. -> Avoir des classements de pattern et résultat de groupe.
     + _DONE_ - 9.1 -  -> Conception
     + _DONE_ - 9.2 -  -> Documentation
-    + __INPR__ - 9.3 -  -> Implémentation
-        - __INPR__ - 9.3.1 -  -> a
-        - __INPR__ - 9.3.2 -  -> b
-        - __INPR__ - 9.3.3 -  -> c
-        - __INPR__ - 9.3.4 -  -> d
-        - __INPR__ - 9.3.5 -  -> e
-        - __INPR__ - 9.3.6 -  -> f
-        - __INPR__ - 9.3.7 -  -> g
-        - __INPR__ - 9.3.8 -  -> h
-    + __TODO__ - 9.4 -  -> Tests
+    + _DONE_ - 9.3 -  -> Implémentation
+        - _DONE_ - 9.3.1 -  -> a
+        - _DONE_ - 9.3.2 -  -> b
+        - _DONE_ - 9.3.3 -  -> c
+        - _DONE_ - 9.3.4 -  -> d
+        - _DONE_ - 9.3.5 -  -> e
+        - _DONE_ - 9.3.6 -  -> f
+        - _DONE_ - 9.3.7 -  -> g
+        - _DONE_ - 9.3.8 -  -> h
+    + _DONE_ - 9.4 -  -> Tests
     + __TODO__ - 9.5 -  -> Run et analyse des résultats
 
 * _DONE_- 10 - Télécharger des données du forex (EURUSD depuis Mai 2000).
