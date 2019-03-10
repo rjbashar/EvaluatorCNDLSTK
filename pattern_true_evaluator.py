@@ -3,6 +3,7 @@ import numpy as np
 import talib as ta
 import filter
 import matplotlib.pyplot as plt
+import time
 
 
 # a
@@ -78,13 +79,15 @@ def pattern_matching_and_filtering(filter_name, filter_direction, pattern_name, 
 
     """
     # First we match the prices with ta-lib
-    tab_cor = []
-    if pattern_name == 'hammer':
-        tab_cor = ta.CDLHAMMER(opens, highs, lows, closes)
-    elif pattern_name == "belthold":
-        tab_cor = ta.CDLBELTHOLD(opens, highs, lows, closes)
-    else:  # Default pattern is hammer
-        tab_cor = ta.CDLHAMMER(opens, highs, lows, closes)
+    pattern_processor = getattr(ta, pattern_name)
+    tab_cor = pattern_processor(opens, highs, lows, closes)
+
+    # if pattern_name == 'hammer':
+    #     tab_cor = ta.CDLHAMMER(opens, highs, lows, closes)
+    # elif pattern_name == "belthold":
+    #     tab_cor = ta.CDLBELTHOLD(opens, highs, lows, closes)
+    # else:  # Default pattern is hammer
+    #     tab_cor = ta.CDLHAMMER(opens, highs, lows, closes)
 
     if pattern_direction == 'bullish':
         # Then we flat out everything under 0
@@ -102,7 +105,10 @@ def pattern_matching_and_filtering(filter_name, filter_direction, pattern_name, 
         pass
     elif filter_name == 'ema_filter':
         tab_cor = filter.ema_filter(closes, tab_cor, direction=filter_direction, ma=9)
-
+    elif filter_name == 'amplitude_filter':
+        tab_cor = filter.amplitude_filter(closes, lows, tab_cor)
+    elif filter_name == 'zigzag_filter':
+        tab_cor = filter.zigzag_filter(tab_cor)
     return tab_cor
 
 
@@ -127,13 +133,15 @@ def analyse(tab_corr, dates, opens, highs, lows, closes, stoploss=3.5, period=10
     if len(dates) != k or len(opens) != k or len(highs) != k or len(lows) != k or len(closes) != k:
         return "array length not equals to k."
 
+    edge = 0.0
     results = []
     for i in range(0, k):
         if tab_corr[i] != 0:
             percentage = (100 * (closes[min(i+period, len(closes)-1)] / closes[i])) - 100
+            edge += percentage
             results.append((dates[i], percentage))
 
-    return results
+    return edge, results
 
 
 # e
@@ -157,18 +165,20 @@ def analyse_max(tab_corr, dates, opens, highs, lows, closes, stoploss=3.5, perio
     if len(dates) != k or len(opens) != k or len(highs) != k or len(lows) != k or len(closes) != k:
         return "array length not equals to k."
 
+    edge = 0.0
     results = []
     for i in range(0, k):
         if tab_corr[i] != 0:
             highest_price = max(highs[i:i+period])
             percentage = (100 * (highest_price / closes[i])) - 100
+            edge += percentage
             results.append((dates[i], percentage))
 
-    return results
+    return edge, results
 
 
 # f
-def plot_results(results, pattern_name, filter_name, stoploss=3.5, plot=False):
+def plot_results(edge, results, filter_name, filter_direction, pattern_name, pattern_direction, stoploss=3.5, plot=False):
     """ Plot et écrit les résultats dans la sortie de la fonction
 
     dates -- tableau de dates
@@ -178,12 +188,19 @@ def plot_results(results, pattern_name, filter_name, stoploss=3.5, plot=False):
     stoploss -- niveau du stoploss en %
     plot -- booléen. Si true alors affiche un graphe résultat
     --------
-    Retourne un rapport (string)
+    Retourne un rapport (dict)
 
     """
     if len(results) == 0:
-        print('Erreur: Aucun résultat obtenu depuis le pattern matching')
-        return
+        report = 'Erreur: Aucun résultat obtenu depuis le pattern matching'
+        data = {'pattern_name': pattern_name,
+                'patter_direction': pattern_direction,
+                'filter_name': filter_name,
+                'filter_direction': filter_direction,
+                'n_trades': len(results),
+                'stoploss': stoploss,
+                'report': report}
+        return data
 
     bloc1 = 0
     bloc2 = 0
@@ -214,13 +231,31 @@ def plot_results(results, pattern_name, filter_name, stoploss=3.5, plot=False):
     report += "\n  [ 0% ;  1%]: {:.5} %".format(100*bloc4/len(results))
     report += "\n  [ 1% ;  3%]: {:.5} %".format(100*bloc5/len(results))
     report += "\n  [ 3% ;  +%[: {:.5} %".format(100*bloc6/len(results))
+    report += "\nNormalized edge is {:.5}".format(edge/len(results))
     report += "\nCalculated from {} trades".format(len(results))
+
+    data = {'pattern_name': pattern_name,
+            'pattern_direction': pattern_direction,
+            'filter_name': filter_name,
+            'filter_direction': filter_direction,
+            'n_trades': len(results),
+            'edge': edge,
+            'normalized_edge': edge/len(results),
+            'bloc1': bloc1,
+            'bloc2': bloc2,
+            'bloc3': bloc3,
+            'bloc4': bloc4,
+            'bloc5': bloc5,
+            'bloc6': bloc6,
+            'stoploss': stoploss,
+            'report': report}
 
     if plot:
         # get all the percents results only
         percents = []
         for i in results:
             percents.append(i[1])
+        plt.title("Pattern {}, filter {}:".format(pattern_name, filter_name))
         plt.xlabel("% return")
         plt.ylabel("number of trade")
         bins = [-3.95, -3.9, -3.85, -3.8, -3.75, -3.7, -3.65, -3.6, -3.55, -3.5, -3.45, -3.4, -3.35, -3.3, -3.25, -3.2, -3.15, -3.1, -3.05, -3.0, -2.95, -2.9, -2.85, -2.8, -2.75, -2.7, -2.65, -2.6, -2.55, -2.5, -2.45, -2.4, -2.35, -2.3, -2.25, -2.2, -2.15, -2.1, -2.05, -2.0, -1.95, -1.9, -1.85, -1.8, -1.75, -1.7, -1.65, -1.6, -1.55, -1.5, -1.45, -1.4, -1.35, -1.3, -1.25, -1.2, -1.15, -1.1, -1.05, -1.0, -0.95, -0.9, -0.85, -0.8, -0.75, -0.7, -0.65, -0.6, -0.55, -0.5, -0.45, -0.4, -0.35, -0.3, -0.25, -0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.55, 1.6, 1.65, 1.7, 1.75, 1.8, 1.85, 1.9, 1.95, 2.0, 2.05, 2.1, 2.15, 2.2, 2.25, 2.3, 2.35, 2.4, 2.45, 2.5, 2.55, 2.6, 2.65, 2.7, 2.75, 2.8, 2.85, 2.9, 2.95, 3.0, 3.05, 3.1, 3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5]
@@ -229,7 +264,7 @@ def plot_results(results, pattern_name, filter_name, stoploss=3.5, plot=False):
         plt.axis([-2, 2, 0, max(n)])
         plt.show()
 
-    return report
+    return data
 
 
 # g
@@ -253,10 +288,10 @@ def routine(dates, opens, highs, lows, closes, filter_name, filter_direction, pa
     """
     tab_corr = pattern_matching_and_filtering(filter_name, filter_direction, pattern_name, pattern_direction, opens, highs, lows, closes)
     if max:
-        results = analyse_max(tab_corr, dates, opens, highs, lows, closes, stoploss=stoploss, period=period)
+        edge, results = analyse_max(tab_corr, dates, opens, highs, lows, closes, stoploss=stoploss, period=period)
     else:
-        results = analyse(tab_corr, dates, opens, highs, lows, closes, stoploss=stoploss, period=period)
-    return plot_results(results, pattern_name, filter_name, stoploss=stoploss, plot=plot)
+        edge, results = analyse(tab_corr, dates, opens, highs, lows, closes, stoploss=stoploss, period=period)
+    return plot_results(edge, results, filter_name, filter_direction, pattern_name, pattern_direction, stoploss=stoploss, plot=plot)
 
 
 # h - Fonction qui appelle initialise les données avec a et b et qui appelle g pour plusieurs patterns.
@@ -267,6 +302,7 @@ def main():
     Retourne rien
 
     """
+    t0 = time.time()
     starting_year = 2000
     ending_year = 2019
     dates = []
@@ -310,24 +346,46 @@ def main():
     lows = np.array(new_lows, dtype='double')
     closes = np.array(new_closes, dtype='double')
 
+    t1 = time.time()
+    print('{:.5} s: Fin du chargement des données'.format(t1 - t0))
+
     # Appels de la routine pour chaque pattern
     # Chaque pattern embarque ces paramètres sous la forme
     # [pattern_name, pattern_direction, filter_name, filter_direction,
-    pattern_list = [{'pn': 'hammer', 'pd': 'bullish', 'fn': 'ema_filter', 'fd':'bearish'},
-                    {'pn': 'belthold', 'pd': 'bearish', 'fn': 'ema_filter', 'fd': 'bullish'},
-                    {'pn': 'belthold', 'pd': 'bearish', 'fn': 'no_filter', 'fd': 'bullish'}]
+    # patterns = ['CDLHAMMER', 'CDLBELTHOLD']  # 'CDL3BLACKCROWS', 'CDL3INSIDE']
+    patterns = ['CDL2CROWS', 'CDL3BLACKCROWS', 'CDL3INSIDE', 'CDL3LINESTRIKE', 'CDL3OUTSIDE', 'CDL3STARSINSOUTH', 'CDL3WHITESOLDIERS', 'CDLABANDONEDBABY', 'CDLADVANCEBLOCK', 'CDLBELTHOLD', 'CDLBREAKAWAY', 'CDLCLOSINGMARUBOZU', 'CDLCONCEALBABYSWALL', 'CDLCOUNTERATTACK', 'CDLDARKCLOUDCOVER', 'CDLDOJI', 'CDLDOJISTAR', 'CDLDRAGONFLYDOJI', 'CDLENGULFING', 'CDLEVENINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLGAPSIDESIDEWHITE', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLHANGINGMAN', 'CDLHARAMI', 'CDLHARAMICROSS', 'CDLHIGHWAVE', 'CDLHIKKAKE', 'CDLHIKKAKEMOD', 'CDLHOMINGPIGEON', 'CDLIDENTICAL3CROWS', 'CDLINNECK', 'CDLINVERTEDHAMMER', 'CDLKICKING', 'CDLKICKINGBYLENGTH', 'CDLLADDERBOTTOM', 'CDLLONGLEGGEDDOJI', 'CDLLONGLINE', 'CDLMARUBOZU', 'CDLMATCHINGLOW', 'CDLMATHOLD', 'CDLMORNINGDOJISTAR', 'CDLMORNINGSTAR', 'CDLONNECK', 'CDLPIERCING', 'CDLRICKSHAWMAN', 'CDLRISEFALL3METHODS', 'CDLSEPARATINGLINES', 'CDLSHOOTINGSTAR', 'CDLSHORTLINE', 'CDLSPINNINGTOP', 'CDLSTALLEDPATTERN', 'CDLSTICKSANDWICH', 'CDLTAKURI', 'CDLTASUKIGAP', 'CDLTHRUSTING', 'CDLTRISTAR', 'CDLUNIQUE3RIVER', 'CDLUPSIDEGAP2CROWS', 'CDLXSIDEGAP3METHODS']
+    directions = ['bearish', 'bullish', 'range']
+    filters = ['no_filter', 'ema_filter']
 
+    # Création de la liste
+    pattern_list = []
+    for p in patterns:
+        for d in directions:
+            for f in filters:
+                for d1 in directions:
+                    pattern_list.append({'pn': p, 'pd': d, 'fn': f, 'fd': d1})
+
+    all_results = []
     for pattern in pattern_list:
-        report = routine(dates, opens, highs, lows, closes,
-                         filter_name=pattern['fn'],
-                         filter_direction=pattern['fd'],
-                         pattern_name=pattern['pn'],
-                         pattern_direction=pattern['pd'],
-                         max=False,
-                         stoploss=1,
-                         period=10,
-                         plot=True)
-        print(report)
+        t2 = time.time()
+        data_report = routine(dates, opens, highs, lows, closes,
+                                      filter_name=pattern['fn'],
+                                      filter_direction=pattern['fd'],
+                                      pattern_name=pattern['pn'],
+                                      pattern_direction=pattern['pd'],
+                                      max=False,
+                                      stoploss=1,
+                                      period=10,
+                                      plot=False)
+        t3 = time.time()
+        print('{:.5} s ({:.5}s): Fin analyse de {}'.format(t3 - t0, t3 - t2, pattern))
+        if data_report['n_trades'] != 0:
+            all_results.append(data_report)
+
+    # Triage des patterns par son edge
+    sorted_results = sorted(all_results, key=lambda resu: resu['normalized_edge'])
+    for res in sorted_results:
+        print(res)
 
 
 if __name__ == "__main__":

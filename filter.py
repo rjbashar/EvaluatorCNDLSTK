@@ -2,7 +2,7 @@ import talib as ta
 
 
 def zigzag_filter(tab_cor, direction='up', since='15'):
-    pass
+    return tab_cor
 
 
 def ema_filter(prices, tab_cor, direction='bullish', ma=15):
