@@ -323,7 +323,7 @@ def main():
     new_highs = []
     new_lows = []
     new_closes = []
-    k = 15
+    k = 15  # Regroupement des candles en k minutes par candle
     count = 0
     for i in range(0, len(dates), k):
         d, o, h, l, c = group_candles(dates[count*k:(count+1)*k],
@@ -356,8 +356,8 @@ def main():
     patterns = ['CDL2CROWS', 'CDL3BLACKCROWS', 'CDL3INSIDE', 'CDL3LINESTRIKE', 'CDL3OUTSIDE', 'CDL3STARSINSOUTH', 'CDL3WHITESOLDIERS', 'CDLABANDONEDBABY', 'CDLADVANCEBLOCK', 'CDLBELTHOLD', 'CDLBREAKAWAY', 'CDLCLOSINGMARUBOZU', 'CDLCONCEALBABYSWALL', 'CDLCOUNTERATTACK', 'CDLDARKCLOUDCOVER', 'CDLDOJI', 'CDLDOJISTAR', 'CDLDRAGONFLYDOJI', 'CDLENGULFING', 'CDLEVENINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLGAPSIDESIDEWHITE', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLHANGINGMAN', 'CDLHARAMI', 'CDLHARAMICROSS', 'CDLHIGHWAVE', 'CDLHIKKAKE', 'CDLHIKKAKEMOD', 'CDLHOMINGPIGEON', 'CDLIDENTICAL3CROWS', 'CDLINNECK', 'CDLINVERTEDHAMMER', 'CDLKICKING', 'CDLKICKINGBYLENGTH', 'CDLLADDERBOTTOM', 'CDLLONGLEGGEDDOJI', 'CDLLONGLINE', 'CDLMARUBOZU', 'CDLMATCHINGLOW', 'CDLMATHOLD', 'CDLMORNINGDOJISTAR', 'CDLMORNINGSTAR', 'CDLONNECK', 'CDLPIERCING', 'CDLRICKSHAWMAN', 'CDLRISEFALL3METHODS', 'CDLSEPARATINGLINES', 'CDLSHOOTINGSTAR', 'CDLSHORTLINE', 'CDLSPINNINGTOP', 'CDLSTALLEDPATTERN', 'CDLSTICKSANDWICH', 'CDLTAKURI', 'CDLTASUKIGAP', 'CDLTHRUSTING', 'CDLTRISTAR', 'CDLUNIQUE3RIVER', 'CDLUPSIDEGAP2CROWS', 'CDLXSIDEGAP3METHODS']
     directions = ['bearish', 'bullish', 'range']
     filters = ['no_filter', 'ema_filter']
-
     # Création de la liste
+
     pattern_list = []
     for p in patterns:
         for d in directions:
@@ -375,7 +375,7 @@ def main():
                                       pattern_direction=pattern['pd'],
                                       max=False,
                                       stoploss=1,
-                                      period=10,
+                                      period=13,
                                       plot=False)
         t3 = time.time()
         print('{:.5} s ({:.5}s): Fin analyse de {}'.format(t3 - t0, t3 - t2, pattern))
@@ -384,8 +384,10 @@ def main():
 
     # Triage des patterns par son edge
     sorted_results = sorted(all_results, key=lambda resu: resu['normalized_edge'])
-    for res in sorted_results:
-        print(res)
+    print('[')
+    for res in sorted_results[:-2]:
+        print(res, ',')
+    print(sorted_results[-1], ']')
 
 
 if __name__ == "__main__":
